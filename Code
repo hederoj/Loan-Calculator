@@ -1,0 +1,36 @@
+import math
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--type", choices=["annuity", "diff"], help="Incorrect parameters")
+parser.add_argument("--payment", type=int, default=0)
+parser.add_argument("--principal", type=int, default=0)
+parser.add_argument("--periods", type=int, default=0)
+parser.add_argument("--interest", type=float, default = -1)
+
+args = parser.parse_args()
+nominal_interest = args.interest / 1200
+total_pay = 0
+if len(vars(args)) < 4:
+    print("Incorrect parameters")
+if args.payment < 0 or args.periods < 0 or args.interest < 0 or args.principal < 0:
+    print("Incorrect parameters")
+if args.type == "diff" and args.payment:
+    print("Incorrect parameters")
+if args.type == "diff" :
+    for x in range(1, args.periods + 1):
+        monthly = math.ceil((args.principal / args.periods) + (args.interest / 1200) * (args.principal - (args.principal * (x -1)) / args.periods))
+        print("Month ", x, ": payment is ", monthly)
+        total_pay += monthly
+    print()
+    print("Overpayment = ", total_pay - args.principal)
+elif args.type == "annuity":
+    if args.payment == 0:
+        print("Your annuity payment = ", math.ceil(args.principal * ((nominal_interest * (1 + nominal_interest) ** args.periods) / ((1 + nominal_interest) ** args.periods - 1))))
+    elif args.principal == 0:
+        print("Your loan principal = ", (args.payment / ((nominal_interest * (1 + nominal_interest) ** args.periods) / ((1 + nominal_interest) ** args.periods - 1))))
+    else:
+        n = math.ceil(math.log(args.payment/(args.payment - nominal_interest * args.principal), (1 + nominal_interest)))
+        print("It will take ", int(n / 12) , "years to repay this loan!")
+        print("Overpayment = ", n * args.payment - args.principal)
